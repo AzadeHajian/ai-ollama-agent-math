@@ -5,15 +5,15 @@ from models.llm_openai import llm_instance as llm_openai
 import traceback
 from prompts.prompt import general_prompt
 
-def llm_select(llm_model: str):
-    provider = llm_model.strip().lower()
+def llm_select(llm_provider: str, model: str, temperature: float = 0, timeout: int = 300):
+    provider = llm_provider.strip().lower()
     if provider == "ollama":
-        return llm_ollama()
+        return llm_ollama(model=model, temperature=temperature, timeout=timeout)
     if provider == "openai":
-        return llm_openai()
+        return llm_openai(model=model, temperature=temperature, timeout=timeout)
     raise ValueError("Provider must be 'ollama' or 'openai'.")
 
-async def agent_instance(llm_model: str, user_prompt: str):
+async def agent_instance(llm_provider: str, model: str, user_prompt: str, temperature: float = 0, timeout: int = 300):
   
     # Define all tools in one MultiServerMCPClient config
     mcp_tools = MultiServerMCPClient(
@@ -36,7 +36,7 @@ async def agent_instance(llm_model: str, user_prompt: str):
         raise RuntimeError("Failed to get tools from MCP client.")
     
     print(f"Loaded Tools: {[tool.name for tool in tools]}")
-    agent = create_react_agent(model=llm_select(llm_model), tools=tools )  # Create the agent with the LLM and tools
+    agent = create_react_agent(model=llm_select(llm_provider, model, temperature, timeout), tools=tools )  # Create the agent with the LLM and tools
 
     resposne = await agent.ainvoke(
         {
