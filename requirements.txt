@@ -2,3 +2,8 @@ langchain-ollama
 ollama
 langchain-openai
 python-dotenv
+langchain_mcp_adapters
+langgraph
+black
+FastMCP
+streamlit
